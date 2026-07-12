@@ -1,6 +1,10 @@
 //--------------------------------------------------------------
 // Project : PCIe Verification Project
+// File    : pcie_pkg.sv
 //--------------------------------------------------------------
+
+`ifndef PCIE_PKG_SV
+`define PCIE_PKG_SV
 
 package pcie_pkg;
 
@@ -12,13 +16,19 @@ package pcie_pkg;
     `include "uvm_macros.svh"
 
     //----------------------------------------------------------
+    // Configuration
+    //----------------------------------------------------------
+
+    `include "../config/pcie_agent_config.sv"
+
+    //----------------------------------------------------------
     // Transaction
     //----------------------------------------------------------
 
     `include "../seq_item/pcie_transaction.sv"
 
     //----------------------------------------------------------
-    // Sequence
+    // Sequences
     //----------------------------------------------------------
 
     `include "../sequences/pcie_base_sequence.sv"
@@ -60,9 +70,11 @@ package pcie_pkg;
     `include "../env/pcie_env.sv"
 
     //----------------------------------------------------------
-    // Test
+    // Tests
     //----------------------------------------------------------
 
     `include "../tests/pcie_base_test.sv"
 
 endpackage
+
+`endif
