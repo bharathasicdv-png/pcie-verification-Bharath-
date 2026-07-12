@@ -1,8 +1,6 @@
 //--------------------------------------------------------------
 // Project : PCIe Verification Project
 // File    : pcie_agent.sv
-// Author  : Bharath
-// Description : PCIe UVM Agent
 //--------------------------------------------------------------
 
 `ifndef PCIE_AGENT_SV
@@ -10,19 +8,21 @@
 
 class pcie_agent extends uvm_agent;
 
+    `uvm_component_utils(pcie_agent)
+
     //----------------------------------------------------------
-    // Factory Registration
+    // Configuration Object
     //----------------------------------------------------------
 
-    `uvm_component_utils(pcie_agent)
+    pcie_agent_config cfg;
 
     //----------------------------------------------------------
     // Components
     //----------------------------------------------------------
 
-    pcie_sequencer sequencer;
-    pcie_driver    driver;
-    pcie_monitor   monitor;
+    pcie_driver     driver;
+    pcie_monitor    monitor;
+    pcie_sequencer  sequencer;
 
     //----------------------------------------------------------
     // Constructor
@@ -43,14 +43,43 @@ class pcie_agent extends uvm_agent;
 
         super.build_phase(phase);
 
-        sequencer = pcie_sequencer::type_id::create(
-                        "sequencer", this);
+        //----------------------------------------------
+        // Get Configuration
+        //----------------------------------------------
 
-        driver = pcie_driver::type_id::create(
-                        "driver", this);
+        if(!uvm_config_db #(pcie_agent_config)::get(
+                this,
+                "",
+                "cfg",
+                cfg))
+        begin
+            `uvm_fatal(get_type_name(),
+                       "Unable to get Agent Config")
+        end
+
+        //----------------------------------------------
+        // Always create Monitor
+        //----------------------------------------------
 
         monitor = pcie_monitor::type_id::create(
-                        "monitor", this);
+                    "monitor",
+                    this);
+
+        //----------------------------------------------
+        // Active Agent
+        //----------------------------------------------
+
+        if(cfg.is_active == UVM_ACTIVE) begin
+
+            driver = pcie_driver::type_id::create(
+                        "driver",
+                        this);
+
+            sequencer = pcie_sequencer::type_id::create(
+                        "sequencer",
+                        this);
+
+        end
 
     endfunction
 
@@ -62,8 +91,12 @@ class pcie_agent extends uvm_agent;
 
         super.connect_phase(phase);
 
-        driver.seq_item_port.connect(
-            sequencer.seq_item_export);
+        if(cfg.is_active == UVM_ACTIVE) begin
+
+            driver.seq_item_port.connect(
+                sequencer.seq_item_export);
+
+        end
 
     endfunction
 
