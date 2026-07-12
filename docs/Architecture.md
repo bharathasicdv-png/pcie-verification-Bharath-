@@ -1,3 +1,11 @@
 # PCIe Controller Architecture
 
-This document describes the architecture of the PCIe Controller and the verification strategy followed in this repository.
+## Major Blocks
+
+- Transaction Layer
+- Data Link Layer
+- Physical Layer
+- Configuration Space
+- Controller Registers
+
+This document explains the high-level architecture of the PCIe Controller IP.
